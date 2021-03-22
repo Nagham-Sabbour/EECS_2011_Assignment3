@@ -15,6 +15,7 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 			this.right = null;
 		}
 	}
+
 	Node<E> root;
 	public A3BSTree(){
 		this.root = null;
@@ -22,8 +23,11 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
 	@Override
 	public boolean add(E e) {
+		if (this.contains(e)) {
+			return false;
+		}
 		this.root = addHelper(this.root, e);
-		return false;
+		return true;
 	}
 
 	private Node<E> addHelper(Node<E> curr, E e) {
@@ -44,16 +48,24 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
+		boolean flag = false;
 		for (E e : c) {
-			add(e);
+			flag = flag || add(e);
 		}
-		return false;
+		return flag;
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		this.root = removeHelper(this.root, (E)o);
-		return false;
+		try {
+			if (contains((E)o)) {
+				removeHelper(this.root, (E)o);
+				return true;
+			}
+			return false;
+		}catch(Exception e){
+			throw new ClassCastException();
+		}
 	}
 
 	private Node<E> removeHelper(Node<E> curr, E e) {
@@ -89,7 +101,11 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
 	@Override
 	public boolean contains(Object o) {
-		return containsHelper(this.root, (E)o);
+		try {
+			return containsHelper(this.root, (E)o);
+		}catch(Exception e){
+			throw new ClassCastException();
+		}
 	}
 	private boolean containsHelper(Node<E> curr, E e) {
 		if (curr == null) {
@@ -105,25 +121,25 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 	class A3BSTIterator implements Iterator<E>{
 		ArrayList<E> nodeValues;
 		int index;
-		
+
 		public A3BSTIterator (Node<E> node) {
 			this.nodeValues = new ArrayList<>();
 			this.index = -1;
 			inOrderTrav(node);//remember to call root in iterator
 		}
-		
+
 		//recursive 
 		private void inOrderTrav(Node<E> node) {
 			if (node == null) {
 				return;
 			}
-			
+
 			inOrderTrav(node.left);
 			this.nodeValues.add(node.value);
 			inOrderTrav(node.right);
-			
+
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			return this.index + 1 < this.nodeValues.size();
@@ -134,13 +150,14 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 			this.index++; 
 			return this.nodeValues.get(index);
 		}
-		
+
 	}
-	
+
 	@Override
 	public Iterator<E> iterator() {
 		return new A3BSTIterator(this.root);
 	}
+
 
 	@Override
 	public int height() {
@@ -150,10 +167,10 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 		if (root == null) {
 			return -1;
 		}
-		 else {
-		 	int leftHeight = heightHelper(root.left);
-		 	int rightHeight = heightHelper(root.right);
-		 	return Math.max(leftHeight, rightHeight) + 1;
+		else {
+			int leftHeight = heightHelper(root.left);
+			int rightHeight = heightHelper(root.right);
+			return Math.max(leftHeight, rightHeight) + 1;
 		}
 	}
 

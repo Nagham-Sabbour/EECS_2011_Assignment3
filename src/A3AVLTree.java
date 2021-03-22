@@ -28,6 +28,10 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 	@Override
 	public boolean add(E e) {
 
+		if (this.contains(e)) {
+			return false;
+		}
+		
 		Node<E> newNode = new Node<E>(e);
 		Node<E> parent = this.root;
 		Node<E> temp = null;
@@ -53,7 +57,6 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 			temp.right = newNode;
 		}
 		updateBalanceFactorOrRebalance(newNode);
-		//TODO check return value of this method
 		return true;
 	}
 
@@ -151,18 +154,24 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 	}
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
+		boolean flag = false;
 		for (E e : c) {
-			add(e);
+			flag = flag || add(e);
 		}
-		//TODO check return value
-		return true;
+		return flag;
 	}
 
 	@Override
 	public boolean remove(Object o) {
-
-		removeHelper(this.root, (E)o);
-		return false;
+		try {
+			if (contains((E)o)) {
+			removeHelper(this.root, (E)o);
+			return true;
+			}
+			return false;
+		}catch(Exception e){
+			throw new ClassCastException();
+		}
 	}
 
 	private Node<E> removeHelper(Node<E> node, E e) {
@@ -198,7 +207,11 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 
 	@Override
 	public boolean contains(Object o) {
-		return containsHelper(this.root, (E)o);
+		try {
+			return containsHelper(this.root, (E)o);
+		}catch(Exception e){
+			throw new ClassCastException();
+		}
 	}
 
 	private boolean containsHelper(Node<E> node, E e) {
