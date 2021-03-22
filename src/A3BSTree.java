@@ -15,7 +15,6 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 			this.right = null;
 		}
 	}
-
 	Node<E> root;
 	public A3BSTree(){
 		this.root = null;
