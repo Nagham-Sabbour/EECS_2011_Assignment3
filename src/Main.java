@@ -35,6 +35,11 @@ public class Main {
         tree.prettyPrint();
         System.out.println();
         System.out.println(tree.size());
+        
+        Iterator<Integer> iter = tree.iterator();
+        while (iter.hasNext()) {
+        	System.out.println(iter.next());
+        }
 
     }
 }

@@ -102,9 +102,44 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
 	}
 
+	class A3BSTIterator implements Iterator<E>{
+		ArrayList<E> nodeValues;
+		int index;
+		
+		public A3BSTIterator (Node<E> node) {
+			this.nodeValues = new ArrayList<>();
+			this.index = -1;
+			inOrderTrav(node);//remember to call root in iterator
+		}
+		
+		//recursive 
+		private void inOrderTrav(Node<E> node) {
+			if (node == null) {
+				return;
+			}
+			
+			inOrderTrav(node.left);
+			this.nodeValues.add(node.value);
+			inOrderTrav(node.right);
+			
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return this.index + 1 < this.nodeValues.size();
+		}
+
+		@Override
+		public E next() {
+			this.index++; 
+			return this.nodeValues.get(index);
+		}
+		
+	}
+	
 	@Override
 	public Iterator<E> iterator() {
-		return null;
+		return new A3BSTIterator(this.root);
 	}
 
 	@Override

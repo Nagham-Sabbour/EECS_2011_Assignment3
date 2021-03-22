@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -210,10 +211,44 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		return e.compareTo(node.value) < 0 ? containsHelper(node.left, e) : containsHelper(node.right, e);
 	}
 
+	class A3AVLTreeIterator implements Iterator<E>{
+		ArrayList<E> nodeValues;
+		int index;
+		
+		public A3AVLTreeIterator (Node<E> node) {
+			this.nodeValues = new ArrayList<>();
+			this.index = -1;
+			inOrderTrav(node);//remember to call root in iterator
+		}
+		
+		//recursive 
+		private void inOrderTrav(Node<E> node) {
+			if (node == null) {
+				return;
+			}
+			
+			inOrderTrav(node.left);
+			this.nodeValues.add(node.value);
+			inOrderTrav(node.right);
+			
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return this.index + 1 < this.nodeValues.size();
+		}
+
+		@Override
+		public E next() {
+			this.index++; 
+			return this.nodeValues.get(index);
+		}
+		
+	}
+	
 	@Override
 	public Iterator<E> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new A3AVLTreeIterator(this.root);
 	}
 
 	@Override
