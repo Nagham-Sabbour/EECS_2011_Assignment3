@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.PriorityQueue;
 
 public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
@@ -17,34 +18,61 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 	}
 
 	Node<E> root;
+	int size = 0;
 	public A3BSTree(){
 		this.root = null;
 	}
 
 	@Override
 	public boolean add(E e) {
-		if (this.contains(e)) {
-			return false;
+		Node<E> newNode = new Node<>(e);
+		if (this.root == null) {
+			this.root = newNode;
+			this.size++;
+			return true;
 		}
-		this.root = addHelper(this.root, e);
+		Node<E> parent = null;
+		Node<E> curr = root;
+		int heightToAdd = 0;
+		while (curr != null) {
+			parent = curr;
+			if (newNode.value.compareTo(curr.value) < 0) {
+				curr = curr.left;
+			}
+			else if (newNode.value.compareTo(curr.value) > 0) {
+				curr = curr.right;
+			}
+			else {
+				curr.value = newNode.value;
+				return false;
+			}
+			heightToAdd++;
+		}
+		if (newNode.value.compareTo(parent.value) < 0) {
+			parent.left = newNode;
+		}
+		else {
+			parent.right = newNode;
+		}
+		this.size++;
 		return true;
 	}
 
-	private Node<E> addHelper(Node<E> curr, E e) {
-		if (curr == null) {
-			return new Node<E>(e);
-		}
-		if (e.compareTo(curr.value) < 0) {
-			curr.left = addHelper(curr.left, e);
-		}
-		else if (e.compareTo(curr.value) > 0) {
-			curr.right = addHelper(curr.right, e);
-		}
-		else {
-			return curr;
-		}
-		return curr;
-	}
+//	private Node<E> addHelper(Node<E> curr, E e) {
+//		if (curr == null) {
+//			return new Node<E>(e);
+//		}
+//		if (e.compareTo(curr.value) < 0) {
+//			curr.left = addHelper(curr.left, e);
+//		}
+//		else if (e.compareTo(curr.value) > 0) {
+//			curr.right = addHelper(curr.right, e);
+//		}
+//		else {
+//			return curr;
+//		}
+//		return curr;
+//	}
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
@@ -57,98 +85,175 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
 	@Override
 	public boolean remove(Object o) {
-		try {
-			if (contains((E)o)) {
-				removeHelper(this.root, (E)o);
-				return true;
+		E e = (E)o;
+		Node<E> parent = null;
+		Node<E> curr = this.root;
+		boolean isLeft = false;
+		int heightToRemove = 0;
+		while (curr != null && curr.value != e) {
+			parent = curr;
+			if (e.compareTo(curr.value) < 0) {
+				curr = curr.left;
+				isLeft = true;
 			}
-			return false;
-		}catch(Exception e){
-			throw new ClassCastException();
+			else if (e.compareTo(curr.value) > 0){
+				curr = curr.right;
+				isLeft = false;
+			}
+			heightToRemove++;
 		}
-	}
-
-	private Node<E> removeHelper(Node<E> curr, E e) {
 		if (curr == null) {
-			return null;
+			return false;
 		}
-		if (e == curr.value) {
-			if (curr.left == null && curr.right == null) {
-				return null;
+		if (curr.left == null && curr.right == null) {
+			if (curr == this.root) {
+				this.root = null;
 			}
-			if (curr.right == null) {
-				return curr.left;
+			else if(isLeft) {
+				parent.left = null;
 			}
-			if (curr.left == null) {
-				return curr.right;
+			else {
+				parent.right = null;
 			}
-			E smallest = smallestValue(curr.right);
-			curr.value = smallest;
-			curr.right = removeHelper(curr.right, smallest);
-			return curr;
 		}
-		if (e.compareTo(curr.value) < 0) {
-			curr.left = removeHelper(curr.left, e);
-			return curr;
-		}
-		curr.right = removeHelper(curr.right, e);
-		return curr;
-	}
+		else if (curr.left == null) {
+			if (curr == this.root) {
+				this.root = curr.right;
+			}
+			else if (isLeft) {
+				parent.left = curr.right;
+			}
+			else {
+				parent.right = curr.right;
+			}
 
-	private E smallestValue(Node<E> root) {
-		return root.left == null ? root.value : smallestValue(root.left);
+		}
+		else if (curr.right == null){
+			if (curr == this.root) {
+				this.root = curr.left;
+			}
+			else if (isLeft) {
+				parent.left = curr.left;
+			}
+			else {
+				parent.right = curr.left;
+			}
+		}
+		else {
+			Node<E> succ = findSucc(curr);
+			if (curr == root) {
+				root = succ;
+			}
+			else if (isLeft) {
+				parent.left = succ;
+			}
+			else {
+				parent.right = succ;
+			}
+			succ.left = curr.left;
+		}
+		this.size--;
+		return true;
+	}
+	private Node<E> findSucc(Node<E> node) {
+		Node<E> succ = node;
+		Node<E> parent = node;
+		Node<E> curr = node.right;
+
+		while (curr != null) {
+			parent = succ;
+			succ = curr;
+			curr = curr.left;
+		}
+		if (succ != node.right) {
+			parent.left = succ.right;
+			succ.right = node.right;
+		}
+		return succ;
 	}
 
 	@Override
 	public boolean contains(Object o) {
 		try {
-			return containsHelper(this.root, (E)o);
+			return containsHelper((E)o);
 		}catch(Exception e){
 			throw new ClassCastException();
 		}
 	}
-	private boolean containsHelper(Node<E> curr, E e) {
-		if (curr == null) {
-			return false;
+	private boolean containsHelper(E e) {
+		Node<E> curr = this.root;
+		while (curr != null) {
+			if (e.compareTo(curr.value) < 0) {
+				curr = curr.left;
+			}
+			else if (e.compareTo(curr.value) > 0) {
+				curr = curr.right;
+			}
+			else {
+				return true;
+			}
 		}
-		if (e == curr.value) {
-			return true;
-		}
-		return e.compareTo(curr.value) < 0 ? containsHelper(curr.left, e) : containsHelper(curr.right, e);
-
+		return false;
 	}
 
 	class A3BSTIterator implements Iterator<E>{
-		ArrayList<E> nodeValues;
+		E[] nodeValues;
 		int index;
 
 		public A3BSTIterator (Node<E> node) {
-			this.nodeValues = new ArrayList<>();
+			this.nodeValues = (E[]) new Comparable[size()];
 			this.index = -1;
 			inOrderTrav(node);//remember to call root in iterator
 		}
 
-		//recursive 
 		private void inOrderTrav(Node<E> node) {
+			Node<E> curr;
+			Node<E> p;
 			if (node == null) {
 				return;
 			}
+			curr = node;
+			int ctr = 0;
+			while (curr != null) {
 
-			inOrderTrav(node.left);
-			this.nodeValues.add(node.value);
-			inOrderTrav(node.right);
+				if (curr.left == null) {
+					nodeValues[ctr] = curr.value;
+					ctr++;
+					curr = curr.right;
+				}
+				else {
 
+					p = curr.left;
+					while (p.right != null && p.right != curr) {
+						p = p.right;
+					}
+
+					if (p.right == null) {
+						p.right = curr;
+						curr = curr.left;
+
+					}
+
+					else {
+						p.right = null;
+						nodeValues[ctr] = curr.value;
+						ctr++;
+						curr = curr.right;
+					}
+				}
+
+			}
 		}
 
 		@Override
 		public boolean hasNext() {
-			return this.index + 1 < this.nodeValues.size();
+			return this.index + 1 < this.nodeValues.length;
 		}
 
 		@Override
 		public E next() {
 			this.index++; 
-			return this.nodeValues.get(index);
+			return this.nodeValues[index];
 		}
 
 	}
@@ -161,44 +266,11 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
 	@Override
 	public int height() {
-		return heightHelper(this.root);
-	}
-	private int heightHelper(Node<E> root) {
-		if (root == null) {
-			return -1;
-		}
-		else {
-			int leftHeight = heightHelper(root.left);
-			int rightHeight = heightHelper(root.right);
-			return Math.max(leftHeight, rightHeight) + 1;
-		}
+		return -1;
 	}
 
 	@Override
 	public int size() {
-		return sizeHelper(this.root);
-	}
-	private int sizeHelper(Node<E> root) {
-		if (root == null) {
-			return 0;
-		}
-		else {
-			return sizeHelper(root.left) + sizeHelper(root.right) + 1;
-		}
-	}
-
-	//TODO delete this
-	ArrayList<E> array;
-	public String toString() {
-		array = new ArrayList<E>();
-		toStringHelper(this.root); // IN ORDER TRAVERSAL
-		return array.toString();
-	}
-	public void toStringHelper(Node<E> node) {
-		if(node != null) {
-			toStringHelper(node.left);
-			array.add(node.value);
-			toStringHelper(node.right);
-		}
+		return this.size;
 	}
 }

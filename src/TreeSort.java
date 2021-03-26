@@ -6,15 +6,7 @@ public class TreeSort{
 	 */
 	public static <E extends Comparable <? super E>> void sort( E[] a){
 		Tree <E> tree = new A3AVLTree<>();
-		int index;
-		for(index = 0 ; index < a.length; index++ ) {
-			tree.add(a[index]);
-		}
-		
-		Iterator<E> iter = tree.iterator();
-		for(index = 0; index < a.length; index++) {
-			a[index] = iter.next();
-		}	
+		sort(tree, a);
 	}
 	
 	/**

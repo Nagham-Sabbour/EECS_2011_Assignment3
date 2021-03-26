@@ -225,11 +225,12 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 	}
 
 	class A3AVLTreeIterator implements Iterator<E>{
-		ArrayList<E> nodeValues;
+		//TODO use array instead of array list
+		E[] nodeValues;
 		int index;
 		
 		public A3AVLTreeIterator (Node<E> node) {
-			this.nodeValues = new ArrayList<>();
+			this.nodeValues = (E[]) new Comparable[size()];
 			this.index = -1;
 			inOrderTrav(node);//remember to call root in iterator
 		}
@@ -241,20 +242,20 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 			}
 			
 			inOrderTrav(node.left);
-			this.nodeValues.add(node.value);
+			this.nodeValues[index] = (node.value);
 			inOrderTrav(node.right);
 			
 		}
 		
 		@Override
 		public boolean hasNext() {
-			return this.index + 1 < this.nodeValues.size();
+			return this.index + 1 < this.nodeValues.length;
 		}
 
 		@Override
 		public E next() {
 			this.index++; 
-			return this.nodeValues.get(index);
+			return this.nodeValues[index];
 		}
 		
 	}
