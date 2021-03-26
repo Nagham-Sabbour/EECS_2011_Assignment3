@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.PriorityQueue;
 
 public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
@@ -23,6 +22,9 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 		this.root = null;
 	}
 
+	public Node<E> 	getRoot() {
+		return this.root;
+	}
 	@Override
 	public boolean add(E e) {
 		Node<E> newNode = new Node<>(e);
@@ -83,7 +85,10 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
 	@Override
 	public boolean remove(Object o) {
-		E e = (E)o;
+		return removeHelper((E)o);
+	}
+
+	private boolean removeHelper(E e) {
 		Node<E> parent = null;
 		Node<E> curr = this.root;
 		boolean isLeft = false;
@@ -262,11 +267,93 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 
 	@Override
 	public int height() {
-		return -1;
+		return this.heightHelper(this.root);
+	}
+	private int heightHelper(Node<E> node) {
+		if (node == null) {
+			return -1;
+		}
+		CustomQueue<Node> queue = new CustomQueue<>();
+		queue.enqueue(node);
+		int height = -1;
+		while (true) {
+			int count = queue.size;
+			if (count == 0) {
+				return height;
+			}
+			height++;
+			while (count > 0) {
+				try {
+					Node newNode = queue.first();
+					queue.dequeue();
+					if (newNode.left != null) {
+						queue.enqueue(newNode.left);
+					}
+					if (newNode.right != null) {
+						queue.enqueue(newNode.right);
+					}
+					count--;
+				} catch (Exception exception) {
+					exception.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@Override
 	public int size() {
 		return this.size;
 	}
+	ArrayList<E> array;
+	public String toString() {
+		array = new ArrayList<E>();
+		toStringHelper(this.root); // IN ORDER TRAVERSAL
+		return array.toString();
+	}
+	public void toStringHelper(Node<E> node) {
+		if(node != null) {
+			toStringHelper(node.left);
+			array.add(node.value);
+			toStringHelper(node.right);
+		}
+	}
+}
+
+class CustomQueue<E> {
+	int size;
+	Node head, tail;
+
+	class Node  {
+		E data;
+		Node next;
+
+		public Node(E data) {
+			this.data = data;
+		}
+	}
+
+	public void enqueue(E data) {
+		Node newNode = new Node(data);
+		if (this.size == 0) {
+			head = newNode;
+		}
+		else {
+			tail.next = newNode;
+		}
+		tail = newNode;
+		size++;
+	}
+	public E dequeue()  {
+		E res = head.data;
+		head = head.next;
+		size--;
+		if (this.size == 0) {
+			tail = null;
+		}
+		return res;
+	}
+	public E first() {
+		return head.data;
+	}
+
 }

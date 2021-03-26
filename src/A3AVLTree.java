@@ -231,7 +231,7 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		
 		public A3AVLTreeIterator (Node<E> node) {
 			this.nodeValues = (E[]) new Comparable[size()];
-			this.index = -1;
+			this.index = 0;
 			inOrderTrav(node);//remember to call root in iterator
 		}
 		
@@ -254,8 +254,9 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 
 		@Override
 		public E next() {
-			this.index++; 
-			return this.nodeValues[index];
+			this.index++;
+			return this.nodeValues[index - 1];
+
 		}
 		
 	}
