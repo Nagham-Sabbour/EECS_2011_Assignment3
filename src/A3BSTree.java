@@ -33,7 +33,6 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 		}
 		Node<E> parent = null;
 		Node<E> curr = root;
-		int heightToAdd = 0;
 		while (curr != null) {
 			parent = curr;
 			if (newNode.value.compareTo(curr.value) < 0) {
@@ -46,7 +45,6 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 				curr.value = newNode.value;
 				return false;
 			}
-			heightToAdd++;
 		}
 		if (newNode.value.compareTo(parent.value) < 0) {
 			parent.left = newNode;
@@ -89,7 +87,6 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 		Node<E> parent = null;
 		Node<E> curr = this.root;
 		boolean isLeft = false;
-		int heightToRemove = 0;
 		while (curr != null && curr.value != e) {
 			parent = curr;
 			if (e.compareTo(curr.value) < 0) {
@@ -100,7 +97,6 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 				curr = curr.right;
 				isLeft = false;
 			}
-			heightToRemove++;
 		}
 		if (curr == null) {
 			return false;
