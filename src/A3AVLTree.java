@@ -1,9 +1,18 @@
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * 
+ * @author Patrick Baciu - ; Nagham Sabbour - 217 354 416; Hashir Jamil - 217 452 954
+ * AVL Tree Implementation EECS 2011z Assignment 3, Winter 2021
+ * @param <E>, a comparable generic element to be included in a node-based-tree
+ */
 public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //consider extending A3BSTree
-
+	
+	/**
+	 * Static, nested node class for Binary Search Tree
+	 * @param <E>, a comparable generic element that is the value of a node
+	 */
 	static class Node<E extends Comparable<? super E>> {
 		E value;
 		Node<E> left;
@@ -11,6 +20,11 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		Node<E> parent;
 		int balanceFactor;
 
+		/**
+		 * Node constructor that sets the value of the node as the argument,
+		 *  sets the parent, left and right children of a node as null and balance factor as 0
+		 * @param value, the value of the node being instantiated
+		 */
 		public Node(E value) {
 			this.value = value;
 			this.parent = null;
@@ -20,18 +34,36 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		}
 	}
 
+	/**
+	 * The type of nodes that will be present in the AVL tree
+	 */
 	private Node<E> root;
+	
+	/**
+	 * AVL tree's constructor
+	 * Sets the root as null by default (i.e. instantiates an empty tree)
+	 */
 	public A3AVLTree(){
 		this.root = null;
 	}
 
+	/**
+	 * Adds the specified element to this tree (duplicates are not allowed)
+	 * @param e element to add
+	 * @return true if the element was added (the tree was modified) 
+	 */
 	@Override
 	public boolean add(E e) {
 		
-		Node<E> newNode = new Node<E>(e);
-		Node<E> parent = this.root;
-		Node<E> temp = null;
+		//Instantiate three nodes:
+		Node<E> newNode = new Node<E>(e); //First node is one with the value to be added
+		Node<E> parent = this.root; //Second node is the root
+		Node<E> temp = null; //Third node is a temporary node that is  throughout the method and instantiated null
 
+		/*
+		 * Traverse through the tree down the path where the value of nodes is greater than the value e
+		 * 
+		 */
 		while (parent != null) {
 			temp = parent;
 			if (newNode.value.compareTo(parent.value) < 0) {
@@ -42,6 +74,7 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 			}
 		}
 
+		
 		newNode.parent = temp;
 		if (temp == null) {
 			this.root = newNode;
@@ -56,6 +89,10 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		return true;
 	}
 
+	/**
+	 * 
+	 * @param node
+	 */
 	private void updateBalanceFactorOrRebalance(Node<E> node) {
 		if (node.balanceFactor < -1 || node.balanceFactor > 1) {
 			rebalanceNode(node);
@@ -75,6 +112,11 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 
 		}
 	}
+	
+	/**
+	 * 
+	 * @param node
+	 */
 	private void rebalanceNode(Node<E> node) {
 		//if node balance factor positive, rotate based on right child
 		if (node.balanceFactor > 0) {
@@ -102,6 +144,10 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		}
 	}
 
+	/**
+	 * 
+	 * @param node
+	 */
 	private void rotateLeft(Node<E> node) {
 
 		Node<E> right = node.right;
@@ -126,6 +172,10 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		right.balanceFactor = right.balanceFactor + Math.min(0, node.balanceFactor) - 1;
 	}
 
+	/**
+	 * 
+	 * @param node
+	 */
 	private void rotateRight(Node<E> node) {
 		Node<E> left = node.left;
 		node.left = left.right;
@@ -148,6 +198,13 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		node.balanceFactor = node.balanceFactor - Math.min(0, left.balanceFactor) + 1;
 		left.balanceFactor = left.balanceFactor + Math.max(0, node.balanceFactor) + 1;
 	}
+	
+	/**
+	 * Adds all of the elements in the specified collection to this tree.
+	 * (duplicates are not allowed)
+	 * @param c Collection containing the elements
+	 * @return true if the tree was changed as a result of the call
+	 */
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
 		boolean flag = false;
@@ -157,6 +214,11 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		return flag;
 	}
 
+	/**
+	 * Removes the specified element from this tree, if it is present. 
+	 * @param o object to remove
+	 * @return true if this tree contained the element 
+	 */
 	@Override
 	public boolean remove(Object o) {
 		try {
@@ -170,6 +232,12 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		}
 	}
 
+	/**
+	 * 
+	 * @param node
+	 * @param e
+	 * @return
+	 */
 	private Node<E> removeHelper(Node<E> node, E e) {
 		if (node == null) {
 			return null;
@@ -197,10 +265,21 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		return node;
 
 	}
+	
+	/**
+	 * 
+	 * @param root
+	 * @return
+	 */
 	private E smallestValue(Node<E> root) {
 		return root.left == null ? root.value : smallestValue(root.left);
 	}
 
+	/**
+	 * Returns true if this tree contains the specified element. 
+	 * @param o
+	 * @return
+	 */
 	@Override
 	public boolean contains(Object o) {
 		try {
@@ -209,7 +288,13 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 			throw new ClassCastException();
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @param node
+	 * @param e
+	 * @return
+	 */
 	private boolean containsHelper(Node<E> node, E e) {
 		if (node == null) {
 			return false;
@@ -220,18 +305,29 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		return e.compareTo(node.value) < 0 ? containsHelper(node.left, e) : containsHelper(node.right, e);
 	}
 
+	/**
+	 * 
+	 *
+	 */
 	class A3AVLTreeIterator implements Iterator<E>{
 		//TODO use array instead of array list
 		E[] nodeValues;
 		int index;
 		
+		/**
+		 * 
+		 * @param node
+		 */
 		public A3AVLTreeIterator (Node<E> node) {
 			this.nodeValues = (E[]) new Comparable[size()];
 			this.index = 0;
 			inOrderTrav(node);//remember to call root in iterator
 		}
 		
-		//recursive 
+		/**
+		 * Recursive in order traversal of AVL tree
+		 * @param node
+		 */
 		private void inOrderTrav(Node<E> node) {
 			if (node == null) {
 				return;
@@ -243,11 +339,17 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 			
 		}
 		
+		/**
+		 * 
+		 */
 		@Override
 		public boolean hasNext() {
 			return this.index + 1 < this.nodeValues.length;
 		}
 
+		/**
+		 * 
+		 */
 		@Override
 		public E next() {
 			this.index++;
@@ -257,16 +359,29 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		
 	}
 	
+	/** Returns an iterator over the elements of this tree in ascending order
+	 * @return the iterator described above
+	 */
 	@Override
 	public Iterator<E> iterator() {
 		return new A3AVLTreeIterator(this.root);
 	}
 
+	/** Returns the height of the tree. 
+	 * For an empty tree should return -1. 
+	 * For a tree of one node should return 0
+	 * @return height of the tree
+	 */
 	@Override
 	public int height() {
 		return heightHelper(this.root);
 	}
 
+	/**
+	 * 
+	 * @param root
+	 * @return
+	 */
 	private int heightHelper(Node<E> root) {
 		if (root == null) {
 			return -1;
@@ -278,10 +393,19 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		}
 	}
 
+	/** Returns the number of elements in the tree. 
+	 * @return number of elements
+	 */
 	@Override
 	public int size() {
 		return sizeHelper(this.root);
 	}
+	
+	/**
+	 * 
+	 * @param root
+	 * @return
+	 */
 	private int sizeHelper(Node<E> root) {
 		if (root == null) {
 			return 0;
