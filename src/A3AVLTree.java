@@ -134,7 +134,7 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 		Node<E> left = node.left;
 		node.left = left.right;
 		if (left.right != null) {
-			left.left.parent = node;
+			left.right.parent = node;
 		}
 		left.parent = node.parent;
 		if (node.parent == null) {
