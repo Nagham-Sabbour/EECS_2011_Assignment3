@@ -27,10 +27,6 @@ public class A3AVLTree <E extends Comparable<? super E>> implements Tree<E>{ //c
 
 	@Override
 	public boolean add(E e) {
-
-		if (this.contains(e)) {
-			return false;
-		}
 		
 		Node<E> newNode = new Node<E>(e);
 		Node<E> parent = this.root;
