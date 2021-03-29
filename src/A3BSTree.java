@@ -3,7 +3,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * @author Patrick Baciu - ; Nagham Sabbour - 217 354 416; Hashir Jamil - 217 452 954
+ * @author Patrick Baciu - 217 518 135; Nagham Sabbour - 217 354 416; Hashir Jamil - 217 452 954
  * Binary Search Tree Implementation EECS 2011z Assignment 3, Winter 2021
  * @param <E>, a comparable generic element to be included in a node-based-tree 
  */
@@ -32,13 +32,13 @@ public class A3BSTree <E extends Comparable<? super E>> implements Tree<E>{
 	/**
 	 * Root node of the binary search tree
 	 */
-	Node<E> root;
+	private Node<E> root;
 	/**
 	 * Number of elements in the binary search tree
 	 */
-	int size = 0;
+	private int size = 0;
 	/**
-	 * Constructor that creates a
+	 * Constructor that creates an empty binary search tree.
 	 */
 	public A3BSTree(){
 		this.root = null;
