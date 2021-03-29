@@ -19,12 +19,10 @@ public class TreeSort{
 		for(index = 0 ; index < a.length; index++ ) {
 			tree.add(a[index]);
 		}
-		
-		index = 0;
-		for (Iterator<E> it = tree.iterator(); it.hasNext(); ) {
-			E e = it.next();
-			a[index] = e;
-			index++;
+
+		Iterator<E> iter = tree.iterator();
+		for (index = 0; index < a.length; index++) {
+			a[index] = iter.next();
 		}
 	}
 }
